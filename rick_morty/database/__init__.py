@@ -2,19 +2,13 @@ import datetime
 import logging
 from typing import Callable
 from contextlib import contextmanager
-from sqlalchemy import Column, Integer, DateTime, create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker, declared_attr, scoped_session, Session
+from sqlalchemy import Column, Integer, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session, Session
 
 class Base:
 
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
-
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
-
+   
     def __str__(self):
         return f"{type(self).__name__} id={self.id}"
 
