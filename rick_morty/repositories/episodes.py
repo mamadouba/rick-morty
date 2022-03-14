@@ -10,9 +10,14 @@ class UserRepository(BaseRepository):
         with self._session_factory() as session:
             return session.query(Episode).filter(Episode.name==name).count() > 0
 
-    def create_episode(self, name: str, episode: str, air_date: datetime.Date) -> Episode:
-        episode = Episode(name=name, episode=episode, air_date=air_date)
-        
+    def create_episode(self, data: dict) -> Episode:
+        episode = Episode(
+            id=data.get("id"),
+            name=data.get("name"),
+            episode=data.get("episode"),
+            air_date=data.get("air_date")
+        )
+
         with self._session_factory() as session:
             if session.query(Episode).filter(Episode.name == name).count() > 0:
                 raise ConflictError("episode", "name", name)

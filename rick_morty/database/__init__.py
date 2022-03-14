@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session, Sessi
 
 class Base:
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
    
     def __str__(self):
         return f"{type(self).__name__} id={self.id}"
