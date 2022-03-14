@@ -10,5 +10,5 @@ docker build -t rock-morty .
 docker run -d -p 8000:8000 rick-morty
 ```
 
-# Swagger docs
+# Openapi docs
 http://<ip_address>:8000/docs

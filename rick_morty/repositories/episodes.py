@@ -1,26 +1,19 @@
 import datetime
 from typing import List
-from rick_morty.exceptions import NotFoundError, ConflictError
+
 from rick_morty.database.models import Episode
 from .base import BaseRepository
 
-class UserRepository(BaseRepository):
-
-    def episode_exists(self, name: str) -> bool:
-        with self._session_factory() as session:
-            return session.query(Episode).filter(Episode.name==name).count() > 0
+class EpisodeRepository(BaseRepository):
 
     def create_episode(self, data: dict) -> Episode:
-        episode = Episode(
-            id=data.get("id"),
-            name=data.get("name"),
-            episode=data.get("episode"),
-            air_date=data.get("air_date")
-        )
+        characters = data.pop("characters")
+        episode = Episode(**data)
+
+        for character in  characters:
+            episode.characters.append(character)
 
         with self._session_factory() as session:
-            if session.query(Episode).filter(Episode.name == name).count() > 0:
-                raise ConflictError("episode", "name", name)
             session.add(episode)
             session.commit()
             session.refresh(episode)
@@ -28,22 +21,10 @@ class UserRepository(BaseRepository):
     
     def get_episodes(self) -> List[Episode]:
         with self._session_factory() as session:
-            return session.query(Episode).all()
+            episodes = session.query(Episode).all()
+            return episodes
 
-    def get_episode_by_id(self, episode_id: int) -> Episode:
+    def get_episode(self, episode_id: int) -> Episode:
         with self._session_factory() as session:
-            episode: Episode = session.query(Episode).filter(Episode.id == episode_id).first()
-            if episode is None:
-                raise NotFoundError("episode",  "id", episode_id)
+            episode = session.query(Episode).filter(Episode.id == episode_id).first()
             return episode
-
-    def delete_episode(self, episode_id: int) -> None:
-        with self._session_factory() as session:
-            episode: Episode = session.query(Episode).filter(Episode.id == episode_id).first()
-            if episode is None:
-                raise NotFoundError("episode",  "id", episode_id)
-            episode.delete(episode)
-            session.commit()
-        
-
-    

@@ -1,19 +1,12 @@
 from typing import List, Callable
-from rick_morty.exceptions import NotFoundError, ConflictError
 from rick_morty.database.models import Comment
 from .base import BaseRepository
 
 class CommentRepository(BaseRepository):
 
-
     def create_comment(self, data: dict) -> Comment:
-        comment = Comment(
-            id=data.get("id"),
-            comment=data.get("comment"),
-            character_id=data.get("character_id"),
-            episode_id=data.get("episode_id")
-        )
-        
+        comment = Comment(**data)
+            
         with self._session_factory() as session:
             session.add(comment)
             session.commit()
@@ -21,24 +14,22 @@ class CommentRepository(BaseRepository):
             return comment
     
     def get_comments(self) -> List[Comment]:
-
         with self._session_factory() as session:
             return session.query(Comment).all()
 
-    def get_comment_by_id(self, comment_id: int) -> Comment:
+    def get_comment(self, comment_id: int) -> Comment:
         with self._session_factory() as session:
-            comment: Comment = session.query(Comment).filter(Comment.id == comment_id).first()
-            if comment is None:
-                raise NotFoundError("comment",  "id", comment_id)
+            comment = session.query(Comment).filter(Comment.id == comment_id).first()
             return comment
 
-    def delete_comment(self, comment_id: int) -> None:
+    def delete_comment(self, comment_id: int) -> bool:
         with self._session_factory() as session:
-            comment: Comment = session.query(Comment).filter(Comment.id == comment_id).first()
-            if comment is None:
-                raise NotFoundError("comment",  "id", comment_id)
-            comment.delete(comment)
-            session.commit()
-        
+            comment = session.query(Comment).filter(Comment.id == comment_id).first()
+            if comment:
+                session.delete(comment)
+                session.commit()
+                return True
+            return False 
+
 
     
