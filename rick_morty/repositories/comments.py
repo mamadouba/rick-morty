@@ -6,11 +6,12 @@ from .base import BaseRepository
 class CommentRepository(BaseRepository):
 
 
-    def create_comment(self, comment: str, character_id: int, episode_id: int) -> Comment:
+    def create_comment(self, data: dict) -> Comment:
         comment = Comment(
-            comment = comment,
-            character_id = character_id,
-            episode_id = episode_id,
+            id=data.get("id"),
+            comment=data.get("comment"),
+            character_id=data.get("character_id"),
+            episode_id=data.get("episode_id")
         )
         
         with self._session_factory() as session:

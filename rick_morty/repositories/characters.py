@@ -1,3 +1,4 @@
+from os import stat
 from typing import List
 from rick_morty.exceptions import NotFoundError, ConflictError
 from rick_morty.database.models import Character
@@ -9,12 +10,17 @@ class UserRepository(BaseRepository):
         with self._session_factory() as session:
             return session.query(Character).filter(Character.name==name).count() > 0
 
-    def create_character(self, name: str) -> Character:
-        character = Character(name = name)
+    def create_character(self, data: dict) -> Character:
+        character = Character(
+            id=data.get("id"),
+            name=data.get("name"),
+            status=data.get("status"),
+            species=data.get("species"),
+            type=data.get("type", ""),
+            gender=data.get("gender")
+        )
         
         with self._session_factory() as session:
-            if session.query(Character).filter(Character.name == name).count() > 0:
-                raise ConflictError("character", "name", name)
             session.add(character)
             session.commit()
             session.refresh(character)
