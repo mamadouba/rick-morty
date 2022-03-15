@@ -1,5 +1,6 @@
 from typing import List
 from rick_morty.database.models import Comment
+from rick_morty.utils import apply_filter 
 from .base import BaseRepository
 
 class CommentRepository(BaseRepository):
@@ -20,15 +21,9 @@ class CommentRepository(BaseRepository):
             query = query.limit(per_page).offset((page - 1) * per_page)
             items =  [item.as_dict() for item in query.all()]
 
-            def apply_filter(item, filters):
-                result = {}
-                for key in [k.strip() for k in filters.split(",")]:
-                    if key in item:
-                        result[key] = item[key]
-                return result 
-
             if filters:
                 items = [apply_filter(item, filters) for item in items]
+            
             return {
                 "data": items,
                 "total": total,

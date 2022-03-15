@@ -6,9 +6,7 @@ client = TestClient(app)
 def test_get_episodes():
     response = client.get("/episodes/")
     assert response.status_code == 200
-    data = response.json()
-    assert len(data) > 0
-    
+    data = response.json()    
     fields = [
         "id",
         "name",
@@ -17,4 +15,4 @@ def test_get_episodes():
         "characters"
     ]
     for field in fields:
-        assert field in data[0]
+        assert field in data.get("data")[0]

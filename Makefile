@@ -4,7 +4,7 @@ initdb:
 	poetry run rick_morty/scripts/db.py 
 
 runserver:
-	poetry run uvicorn --host 0.0.0.0 --port 8000 rick_morty.main:app
+	poetry run uvicorn --host 0.0.0.0 --port 8001 rick_morty.main:app
 
 test:
 	poetry run pytest tests

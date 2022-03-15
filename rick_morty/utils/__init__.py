@@ -11,3 +11,10 @@ class Hasher:
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         return pwd_context.verify(plain_password, hashed_password)
+
+def apply_filter(item, filters):
+    result = {}
+    for key in [k.strip() for k in filters.split(",")]:
+        if key in item:
+            result[key] = item[key]
+    return result 
