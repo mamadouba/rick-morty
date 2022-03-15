@@ -6,7 +6,7 @@ from .base import BaseRepository
 
 class EpisodeRepository(BaseRepository):
 
-    def create_episode(self, data: dict) -> Episode:
+    def create_episode(self, data: dict) -> dict:
         characters = data.pop("characters")
         episode = Episode(**data)
 
@@ -17,14 +17,16 @@ class EpisodeRepository(BaseRepository):
             session.add(episode)
             session.commit()
             session.refresh(episode)
-            return episode
+            return episode.as_dict()
     
-    def get_episodes(self) -> List[Episode]:
+    def get_episodes(self) -> List[dict]:
         with self._session_factory() as session:
             episodes = session.query(Episode).all()
-            return episodes
+            return [e.as_dict() for e in episodes]
 
-    def get_episode(self, episode_id: int) -> Episode:
+    def get_episode(self, episode_id: int) -> dict:
         with self._session_factory() as session:
             episode = session.query(Episode).filter(Episode.id == episode_id).first()
-            return episode
+            if episode is None:
+                return {}
+            return episode.as_dict()
