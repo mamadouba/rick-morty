@@ -13,10 +13,6 @@ class Settings(BaseSettings):
     
     @property
     def sqlite_conn_str(cls):
-        return "sqlite:///app.db" 
+        return "sqlite:////tmp/app.db" 
     
-    class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
 
-settings = Settings()

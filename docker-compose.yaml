@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  rickmorty-db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_NAME=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    container_name: rickmorty-db
+
+  rickmorty-api:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rickmorty-db
+    environment:
+      - DB_HOST=rickmorty-db
+      - DB_PORT=5432
+      - DB_NAME=test
+      - DB_USER=test
+      - DB_PASSWORD=test
+    container_name: rickmorty-api
+volumes:
+  pgdata:

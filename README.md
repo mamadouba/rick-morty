@@ -1,14 +1,19 @@
 # Rick & Morty API
 
-# Dependencies
-MakeFile
-Docker Engine
-
 # Build and run api
 ```bash
-docker build -t rock-morty .
-docker run -d -p 8000:8000 rick-morty
+docker-compose up -d
+```
+
+# Init db
+```bash
+docker exec -it rickmorty-api poetry run rick_morty/scripts/db.py
+```
+
+# Run test
+```bash
+docker exec -it rickmorty-api poetry run pytest tests
 ```
 
 # Openapi docs
-http://<ip_address>:8000/docs
+http://<your_ip_address>:8000/docs

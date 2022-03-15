@@ -48,20 +48,14 @@ def load_episodes(path: str, repository: Repository) -> None:
     for episode in read_data(path):
         logger.debug(f"create episode {episode['name']}")
         model = EpisodeIn(**episode)
-        
-        # data = model.dict()
-
-        # data["characters"] = []
-        # for character_id in model.characters:
-        #     character = repository.get_character(character_id)
-        #     if character:
-        #         data["characters"].append(character)
         repository.create_episode(model.dict())
 
-
-if __name__ == "__main__":
+def main():
     db = get_db()
     db.create_database()
     repository: Repository = get_repository()
     load_characters("data/characters.json", repository)
     load_episodes("data/episodes.json", repository)
+
+if __name__ == "__main__":
+    main()

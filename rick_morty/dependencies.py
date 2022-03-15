@@ -10,7 +10,7 @@ def get_settings() -> Settings:
 @lru_cache
 def get_db() -> Database:
     settings = get_settings()
-    return Database(settings.sqlite_conn_str)
+    return Database(settings.psql_conn_str)
 
 @lru_cache
 def get_repository() -> Repository:

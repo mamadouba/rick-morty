@@ -5,12 +5,9 @@ from fastapi import FastAPI
 from rick_morty.endpoints import characters
 from rick_morty.endpoints import episodes 
 from rick_morty.endpoints import comments
-
-logger = logging.getLogger(__name__)
+from rick_morty.scripts import db
 
 def create_app() -> FastAPI:
-
-    logger.debug("create-app")
 
     app = FastAPI()
     app.include_router(characters.router)
@@ -22,6 +19,7 @@ def create_app() -> FastAPI:
         return {
             "name": "Rick & Morty"
         }
+    
     return app
     
 app = create_app()

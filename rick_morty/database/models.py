@@ -39,8 +39,8 @@ class Character(Base):
 
 class Episode(Base):
     __tablename__ = 'episodes'
-    name = Column(String(30), nullable=False, unique=True)
-    episode = Column(String(30), nullable=False, unique=True)
+    name = Column(String(50), nullable=False, unique=True)
+    episode = Column(String(50), nullable=False, unique=True)
     air_date = Column(String(30), nullable=False)
     characters = relationship(
         "Character",
