@@ -25,13 +25,12 @@ class Character(Base):
         secondary=episode_character,
         back_populates='characters')
     
-    
     def as_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "status": self.status,
-            "spicies": self.species,
+            "species": self.species,
             "type": self.type,
             "gender": self.gender,
             "episodes": [e.id for e in self.episodes]

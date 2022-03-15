@@ -14,14 +14,15 @@ class CharacterRepository(BaseRepository):
     
     def get_characters(self) -> List[dict]:
         with self._session_factory() as session:
-            result = session.query(Character).all()
-            return [r.as_dict() for r in result]
-
+            characters = session.query(Character).all()
+            return [character.as_dict() for character in characters]
+            
     def get_character(self, character_id: int) -> dict:
         with self._session_factory() as session:
             character = session.query(Character).filter(Character.id == character_id).first()
-            if character is None:
+            if not character:
                 return {}
             return character.as_dict()
-
+    
+    
     

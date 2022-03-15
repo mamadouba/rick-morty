@@ -1,19 +1,19 @@
-import datetime
 from typing import List
-
-from rick_morty.database.models import Episode
+from rick_morty.database.models import Episode, Character
 from .base import BaseRepository
 
 class EpisodeRepository(BaseRepository):
 
     def create_episode(self, data: dict) -> dict:
-        characters = data.pop("characters")
+        character_ids = data.pop("characters")
         episode = Episode(**data)
 
-        for character in  characters:
-            episode.characters.append(character)
-
         with self._session_factory() as session:
+            for _id in character_ids:
+                query = session.query(Character)
+                character = query.filter(Character.id == _id).first()
+                if not character:
+                    episode.characters.append(character)
             session.add(episode)
             session.commit()
             session.refresh(episode)
@@ -22,7 +22,7 @@ class EpisodeRepository(BaseRepository):
     def get_episodes(self) -> List[dict]:
         with self._session_factory() as session:
             episodes = session.query(Episode).all()
-            return [e.as_dict() for e in episodes]
+            return [episode.as_dict() for episode in episodes]
 
     def get_episode(self, episode_id: int) -> dict:
         with self._session_factory() as session:

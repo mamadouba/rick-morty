@@ -1,11 +1,12 @@
+#!/bin/env python3
 import os
 import json
 import logging
 
 from rick_morty.repositories import Repository
 from rick_morty.dependencies import get_repository, get_db
-from rick_morty.schemas.characters import CharacterIn
-from rick_morty.schemas.episodes import EpisodeIn
+from rick_morty.schemas import CharacterIn
+from rick_morty.schemas import EpisodeIn
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +34,8 @@ def load_characters(path: str, repository: Repository) -> None:
 
     for character in read_data(path):
         logger.debug(f"create character {character['name']}")
-        data = CharacterIn(**character)
-        repository.create_character(data.dict(exclude={"episode"}))
+        model = CharacterIn(**character)
+        repository.create_character(model.dict(exclude={"episode"}))
     
 
 def load_episodes(path: str, repository: Repository) -> None:
@@ -48,14 +49,14 @@ def load_episodes(path: str, repository: Repository) -> None:
         logger.debug(f"create episode {episode['name']}")
         model = EpisodeIn(**episode)
         
-        data = model.dict()
+        # data = model.dict()
 
-        data["characters"] = []
-        for character_id in model.characters:
-            character = repository.get_character(character_id)
-            if character != None:
-                data["characters"].append(character)
-        repository.create_episode(data)
+        # data["characters"] = []
+        # for character_id in model.characters:
+        #     character = repository.get_character(character_id)
+        #     if character:
+        #         data["characters"].append(character)
+        repository.create_episode(model.dict())
 
 
 if __name__ == "__main__":
