@@ -14,3 +14,10 @@ class CommentIn(Comment):
 
 class CommentOut(Comment):
     id: int
+
+
+class CommentList(BaseModel):
+    data: List[CommentOut]
+    total: int 
+    page: int 
+    per_page: int 

@@ -17,7 +17,7 @@ def create_app() -> FastAPI:
     @app.get("/")
     def root():
         return {
-            "name": "Rick & Morty"
+            "message": "Rick & Morty API"
         }
     
     return app

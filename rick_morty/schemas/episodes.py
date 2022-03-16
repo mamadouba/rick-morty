@@ -16,3 +16,9 @@ class EpisodeIn(Episode):
 
 class EpisodeOut(Episode):
     pass
+
+class EpisodeList(BaseModel):
+    data: List[EpisodeOut]
+    total: int 
+    page: int 
+    per_page: int 

@@ -18,3 +18,9 @@ class CharacterIn(Character):
 
 class CharacterOut(Character):
     pass
+
+class CharacterList(BaseModel):
+    data: List[CharacterOut]
+    total: int 
+    page: int 
+    per_page: int 
