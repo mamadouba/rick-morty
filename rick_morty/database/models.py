@@ -48,7 +48,6 @@ class Episode(Base):
         back_populates="episodes")
 
     def as_dict(self):
-        print("====", self.characters)
         return {
             "id": self.id,
             "name": self.name,
