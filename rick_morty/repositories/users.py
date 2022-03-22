@@ -1,44 +1,44 @@
 from typing import List
-from rick_morty.exceptions import NotFoundError
 from rick_morty.database.models import User
 from .base import BaseRepository
 
 class UserRepository(BaseRepository):
 
-    def user_exists(self, username: str) -> bool:
-        with self._session_factory() as session:
-            return session.query(User).filter(User.username==username).count() > 0
-
-    def create_user(self, username: str, password: str) -> User:
-        user = User(username=username, password=password)
+    def create_user(self, **data: dict) -> dict:
+        user = User(**data)
         with self._session_factory() as session:
             session.add(user)
             session.commit()
             session.refresh(user)
-            return user
+            return user.as_dict()
     
-    def get_users(self) -> List[User]:
+    def get_users(self) -> List[dict]:
         with self._session_factory() as session:
-            return session.query(User).all()
+            users = session.query(User).all()
+            return [user.as_dict() for user in users]
 
-    def get_user_by_id(self, user_id: int) -> User:
+    def get_user(self, user_id: int) -> dict:
         with self._session_factory() as session:
-            user: User = session.query(User).filter(User.id == user_id).first()
+            user = session.query(User).filter(User.id == user_id).first()
             if user is None:
-                raise NotFoundError("user",  "id", user_id)
-            return user
+                return None
+            return user.as_dict()
 
-    def find_user(self, username: str) -> User:
+    def find_user(self, email: str) -> dict:
         with self._session_factory() as session:
-            return session.query(User).filter(User.username == username).first()
-
-    def delete_user(self, user_id: int) -> None:
+            user = session.query(User).filter(User.email == email).first()
+            if user:
+                data = user.as_dict()
+                data["password_hash"] = user.password_hash
+                return data 
+            return {}
+           
+    
+    def delete_user(self, user_id: int) -> dict:
         with self._session_factory() as session:
-            user: User = session.query(User).filter(User.id == user_id).first()
+            user = session.query(User).filter(User.id == user_id).first()
             if user is None:
-                raise NotFoundError("user",  "id", user_id)
+                return None
             user.delete(user)
             session.commit()
-        
-
-    
+            return user.as_dict()

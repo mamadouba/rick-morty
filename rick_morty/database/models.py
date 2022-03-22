@@ -1,10 +1,28 @@
 
+import bcrypt
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from . import Base
 
 class User(Base):
     __tablename__ = 'users'
+    firstname = Column(String(50), nullable=False)
+    lastname = Column(String(50), nullable=False)
+    email = Column(String(50), unique=True)
+    password_hash = Column(String(100), nullable=False)
+
+    @property 
+    def fullname(self):
+        return f"{self.firstname} {self.lastname}"
+
+    def as_dict(self):
+        return {
+            "id": self.id, 
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "email": self.email
+        }
+
 
 episode_character = Table(
     'episode_character',

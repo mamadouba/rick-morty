@@ -38,4 +38,13 @@ class CommentRepository(BaseRepository):
                 return {}
             return comment.as_dict()
 
+    def delete_comment(self, comment_id: int) -> dict:
+        with self._session_factory() as session:
+            comment = session.query(Comment).filter(Comment.id == comment_id).first()
+            if comment is None:
+                return {}
+            session.delete(comment)
+            session.commit()
+            return comment.as_dict()
+
     

@@ -1,3 +1,4 @@
+from importlib.resources import contents
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -50,3 +51,13 @@ def get_comment(comment_id: int, repository: Repository = Depends(get_repository
     if not comment:
         return JSONResponse(status_code=404, content={"message": f"comment {comment_id} not found"})
     return JSONResponse(status_code=200, content=comment)
+
+
+@router.delete("/{comment_id}", responses={
+    200: {"model": schemas.CommentOut},
+    404: {"model": schemas.Message }})
+def delete_comment(comment_id: int, repository: Repository = Depends(get_repository)):
+    comment =  repository.delete_comment(comment_id)
+    if not comment:
+        return JSONResponse(status_code=404, content={"message": f"comment {comment_id} not found"})
+    return JSONResponse(status_code=200, content={"message": "successfully deleted"})

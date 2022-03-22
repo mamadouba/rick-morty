@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     db_user: str 
     db_password: str
 
+    jwt_secret: str 
+    jwt_duration: str 
+    jwt_algorithm: str
+
     @property
     def psql_conn_str(cls):
         return f"postgresql://{cls.db_user}:{cls.db_password}@{cls.db_host}:{cls.db_port}/{cls.db_name}" 
@@ -14,5 +18,6 @@ class Settings(BaseSettings):
     @property
     def sqlite_conn_str(cls):
         return "sqlite:////tmp/app.db" 
-    
+
+settings = Settings()
 
