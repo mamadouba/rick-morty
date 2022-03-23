@@ -8,8 +8,8 @@ from rick_morty.settings import settings
 def get_db() -> Database:
     return Database(settings.db_uri)
 
+
 @lru_cache
 def get_repository() -> Repository:
     db = get_db()
     return Repository(session_factory=db.session)
-   

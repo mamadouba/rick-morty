@@ -1,6 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
+
 class Comment(BaseModel):
     episode_id: Optional[int]
     character_id: Optional[int]
@@ -9,8 +10,10 @@ class Comment(BaseModel):
     class Config:
         orm_mode: True
 
+
 class CommentIn(Comment):
     pass
+
 
 class CommentOut(Comment):
     id: int
@@ -18,6 +21,6 @@ class CommentOut(Comment):
 
 class CommentList(BaseModel):
     data: List[CommentOut]
-    total: int 
-    page: int 
-    per_page: int 
+    total: int
+    page: int
+    per_page: int

@@ -5,23 +5,21 @@ from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from rick_morty.settings import settings
 
+
 def sign_jwt(**data: dict) -> dict:
     payload = {
         "email": data.get("email"),
         "expires": time.time() + int(settings.jwt_duration),
-        "tuid": str(uuid.uuid4())
+        "tuid": str(uuid.uuid4()),
     }
-    token = jwt.encode(
-        payload,
-        settings.jwt_secret,
-        settings.jwt_algorithm)
+    token = jwt.encode(payload, settings.jwt_secret, settings.jwt_algorithm)
     return dict(access_token=token)
+
 
 def verify_jwt(token: str) -> dict:
     payload = jwt.decode(
-        token,
-        settings.jwt_secret,
-        algorithms=[settings.jwt_algorithm]) 
+        token, settings.jwt_secret, algorithms=[settings.jwt_algorithm]
+    )
     return payload
 
 
@@ -43,6 +41,7 @@ class JWTBearer(HTTPBearer):
         if payload["expires"] < time.time():
             raise HTTPException(status_code=401, detail="Token has expired.")
         from rick_morty.main import revoked_tokens
+
         if payload["tuid"] in revoked_tokens:
             raise HTTPException(status_code=401, detail="Token has been revoked.")
         request.state.user = payload
@@ -51,23 +50,14 @@ class JWTBearer(HTTPBearer):
 def authorize(*, request: Request):
     auth = request.headers.get("Authorization")
     if auth is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Missing Authorization header")
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
     scheme, token = auth.split()
     if scheme.lower() != "bearer":
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid authentication scheme.")
+        raise HTTPException(status_code=401, detail="Invalid authentication scheme.")
     try:
         data = verify_jwt(token)
     except Exception as exc:
-        raise HTTPException(
-            status_code=403,
-            detail="Token was not valid.")
+        raise HTTPException(status_code=403, detail="Token was not valid.")
     if not data:
-        raise HTTPException(
-            status_code=401,
-            detail="Token has expired."
-        )
+        raise HTTPException(status_code=401, detail="Token has expired.")
     request.state.auth_user = data

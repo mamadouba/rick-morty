@@ -10,10 +10,11 @@ from rick_morty.schemas import EpisodeIn
 
 logger = logging.getLogger(__name__)
 
+
 def read_data(path: str) -> dict:
     """
     Reads file content
-    args: 
+    args:
         path: filename
     returns: dict of data
     """
@@ -24,10 +25,11 @@ def read_data(path: str) -> dict:
         data = json.loads(fd.read())
     return data
 
+
 def load_characters(path: str, repository: Repository) -> None:
     """
     Loads characters data from file to database
-    args: 
+    args:
         path: data filename
         repository: repository instance
     """
@@ -36,12 +38,12 @@ def load_characters(path: str, repository: Repository) -> None:
         logger.debug(f"create character {character['name']}")
         model = CharacterIn(**character)
         repository.create_character(model.dict(exclude={"episode"}))
-    
+
 
 def load_episodes(path: str, repository: Repository) -> None:
     """
     Loads episodes data from file to database
-    args: 
+    args:
         path: data filename
         repository: repository instance
     """
@@ -50,12 +52,14 @@ def load_episodes(path: str, repository: Repository) -> None:
         model = EpisodeIn(**episode)
         repository.create_episode(model.dict())
 
+
 def main():
     db = get_db()
     db.create_database()
     repository: Repository = get_repository()
     load_characters("data/characters.json", repository)
     load_episodes("data/episodes.json", repository)
+
 
 if __name__ == "__main__":
     main()

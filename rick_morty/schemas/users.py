@@ -1,13 +1,15 @@
 from typing import List
 from pydantic import BaseModel
 
+
 class UserBase(BaseModel):
-    firstname: str 
+    firstname: str
     lastname: str
-    email: str 
+    email: str
+
 
 class UserIn(UserBase):
-    password: str 
+    password: str
 
     class Config:
         schema_extra = {
@@ -15,34 +17,34 @@ class UserIn(UserBase):
                 "firstname": "john",
                 "lastname": "doe",
                 "email": "john.doe@example.com",
-                "password": "aze123!"
+                "password": "aze123!",
             }
         }
+
 
 class UserOut(UserBase):
     id: str
 
+
 class UserList(BaseModel):
     data: List[UserOut]
-    total: int 
-    page: int 
-    per_page: int 
+    total: int
+    page: int
+    per_page: int
 
 
 class Login(BaseModel):
-    email: str 
-    password: str 
+    email: str
+    password: str
 
     class Config:
         schema_extra = {
-            "example": {
-                "email": "john.doe@example.com",
-                "password": "aze123!"
-            }
+            "example": {"email": "john.doe@example.com", "password": "aze123!"}
         }
 
+
 class Token(BaseModel):
-    access_token: str 
+    access_token: str
     expires: float
     email: int
-    tuid: str  
+    tuid: str

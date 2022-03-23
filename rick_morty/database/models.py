@@ -1,48 +1,48 @@
-
 import bcrypt
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from . import Base
 
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     firstname = Column(String(50), nullable=False)
     lastname = Column(String(50), nullable=False)
     email = Column(String(50), unique=True)
     password_hash = Column(String(100), nullable=False)
 
-    @property 
+    @property
     def fullname(self):
         return f"{self.firstname} {self.lastname}"
 
     def as_dict(self):
         return {
-            "id": self.id, 
+            "id": self.id,
             "firstname": self.firstname,
             "lastname": self.lastname,
-            "email": self.email
+            "email": self.email,
         }
 
 
 episode_character = Table(
-    'episode_character',
+    "episode_character",
     Base.metadata,
-    Column('character_id', ForeignKey('characters.id')),
-    Column('episode_id', ForeignKey('episodes.id'))
+    Column("character_id", ForeignKey("characters.id")),
+    Column("episode_id", ForeignKey("episodes.id")),
 )
 
+
 class Character(Base):
-    __tablename__ = 'characters'
+    __tablename__ = "characters"
     name = Column(String(50), nullable=False)
     status = Column(String(50), nullable=False)
     species = Column(String(50), nullable=False)
     type = Column(String(50), nullable=False)
     gender = Column(String(50), nullable=False)
     episodes = relationship(
-        "Episode",
-        secondary=episode_character,
-        back_populates='characters')
-    
+        "Episode", secondary=episode_character, back_populates="characters"
+    )
+
     def as_dict(self):
         return {
             "id": self.id,
@@ -51,19 +51,18 @@ class Character(Base):
             "species": self.species,
             "type": self.type,
             "gender": self.gender,
-            "episodes": [e.id for e in self.episodes]
+            "episodes": [e.id for e in self.episodes],
         }
 
 
 class Episode(Base):
-    __tablename__ = 'episodes'
+    __tablename__ = "episodes"
     name = Column(String(50), nullable=False, unique=True)
     episode = Column(String(50), nullable=False, unique=True)
     air_date = Column(String(30), nullable=False)
     characters = relationship(
-        "Character",
-        secondary=episode_character,
-        back_populates="episodes")
+        "Character", secondary=episode_character, back_populates="episodes"
+    )
 
     def as_dict(self):
         return {
@@ -71,11 +70,12 @@ class Episode(Base):
             "name": self.name,
             "episode": self.episode,
             "air_date": self.air_date,
-            "characters": [c.id for c in self.characters]
+            "characters": [c.id for c in self.characters],
         }
 
+
 class Comment(Base):
-    __tablename__ = 'comments'
+    __tablename__ = "comments"
     id = Column(Integer, primary_key=True, autoincrement=True)
     episode_id = Column(Integer, ForeignKey("episodes.id"), nullable=True)
     character_id = Column(Integer, ForeignKey("characters.id"), nullable=True)
@@ -86,6 +86,5 @@ class Comment(Base):
             "id": self.id,
             "episode_id": self.episode_id,
             "character_id": self.character_id,
-            "comment": self.comment
+            "comment": self.comment,
         }
-
