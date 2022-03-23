@@ -9,7 +9,7 @@ class User(Base):
     firstname = Column(String(50), nullable=False)
     lastname = Column(String(50), nullable=False)
     email = Column(String(50), unique=True)
-    password_hash = Column(String(100), nullable=False)
+    password_hash = Column(String(200), nullable=False)
 
     @property
     def fullname(self):

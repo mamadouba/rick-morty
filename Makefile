@@ -9,6 +9,9 @@ runserver:
 test:
 	poetry run pytest tests
 
+black:
+	poetry run black .
+
 createdb:
 	docker run --name postgres -p 5432:5432 \
 	-e POSTGRES_USER=test \

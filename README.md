@@ -17,3 +17,7 @@ docker exec -it rickmorty-api poetry run pytest tests
 
 # Openapi docs
 http://<your_ip_address>:8000/docs
+
+# Remove app 
+docker-compose down
+docker volume rm rick-morty_pgdata

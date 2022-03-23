@@ -16,16 +16,18 @@ def logout(request: Request):
     tuid = request.state.user.get("tuid")
     expires = request.state.user.get("expires")
     revoked_tokens[tuid] = expires
-    return JSONResponse(status_code=200, content={"message": "successfully logged out"})
+    return JSONResponse(status_code=200, content={"detail": "successfully logged out"})
 
 
 @router.post("/login", responses={200: {"model": schemas.Login}})
 def login(data: schemas.Login, repository: Repository = Depends(get_repository)):
     user = repository.find_user(data.email)
     if not user:
-        return JSONResponse(status_code=401, content={"message": "Invalid credentials"})
-    if not bcrypt.checkpw(data.password.encode(), user.get("password_hash")):
-        return JSONResponse(status_code=401, content={"message": "Invalid credentials"})
+        return JSONResponse(status_code=401, content={"detail": "Invalid credentials"})
+    if not bcrypt.checkpw(
+        data.password.encode("utf-8"), user.get("password_hash").encode("utf-8")
+    ):
+        return JSONResponse(status_code=401, content={"detail": "Invalid credentials"})
     token = auth.sign_jwt(**user)
     return JSONResponse(status_code=200, content=token)
 
@@ -57,17 +59,17 @@ def create_user(data: schemas.UserIn, repository: Repository = Depends(get_repos
 
     if repository.find_user(data.email):
         return JSONResponse(
-            status_code=409, content={"message": f"User '{data.email}' already exist"}
+            status_code=409, content={"detail": f"User '{data.email}' already exist"}
         )
     try:
         payload = data.dict()
         password = payload.pop("password")
         salt = bcrypt.gensalt()
-        password_hash = bcrypt.hashpw(password.encode(), salt)
-        payload["password_hash"] = password_hash
+        password_hash = bcrypt.hashpw(password.encode("utf-8"), salt)
+        payload["password_hash"] = password_hash.decode("utf-8")
         user = repository.create_user(**payload)
     except Exception as exc:
-        return JSONResponse(status_code=500, content={"message": str(exc)})
+        return JSONResponse(status_code=500, content={"detail": str(exc)})
     return JSONResponse(status_code=201, content=user)
 
 
@@ -80,7 +82,7 @@ def get_user(user_id: int, repository: Repository = Depends(get_repository)):
     user = repository.get_user(user_id)
     if not user:
         return JSONResponse(
-            status_code=404, content={"message": f"user {user_id} not found"}
+            status_code=404, content={"detail": f"user {user_id} not found"}
         )
     return JSONResponse(status_code=200, content=user)
 
@@ -94,6 +96,6 @@ def delete_user(user_id: int, repository: Repository = Depends(get_repository)):
     user = repository.delete_user(user_id)
     if not user:
         return JSONResponse(
-            status_code=404, content={"message": f"user {user_id} not found"}
+            status_code=404, content={"detail": f"user {user_id} not found"}
         )
-    return JSONResponse(status_code=200, content={"message": "successfully deleted"})
+    return JSONResponse(status_code=200, content={"detail": "successfully deleted"})

@@ -60,6 +60,7 @@ def authorize(authorization: Optional[str] = Header(None)) -> dict:
     if payload["expires"] < time.time():
         raise HTTPException(status_code=401, detail="Token has expired.")
     from rick_morty.main import revoked_tokens
+
     if payload["tuid"] in revoked_tokens:
         raise HTTPException(status_code=401, detail="Token has been revoked.")
     return payload

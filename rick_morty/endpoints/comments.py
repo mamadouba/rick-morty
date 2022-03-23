@@ -11,11 +11,11 @@ from rick_morty.auth import auth
 router = APIRouter(prefix="/comments", tags=["comments"])
 
 
-@router.get("/export", dependencies=[Depends(auth.JWTBearer())])
+@router.get("/export", status_code=200, dependencies=[Depends(auth.JWTBearer())])
 def export_comments(repository: Repository = Depends(get_repository)):
     comments = repository.export_comments()
     with open("comments.csv", "w") as fd:
-        fd.write("id;episode_id,character_id;comment")
+        fd.write("id;episode_id,character_id;comment\n")
         for comment in comments:
             row = "{};{};{};{}".format(
                 comment.get("id"),
@@ -59,20 +59,20 @@ def create_comment(
     data_keys = ["episode_id", "character_id"]
     if not any([True for k in data_keys if k in data.dict()]):
         message = "episode_id or character_id should be provided"
-        return JSONResponse(status_code=400, content={"message": message})
+        return JSONResponse(status_code=400, content={"detail": message})
 
     if data.episode_id:
         episode = repository.get_episode(data.episode_id)
         if not episode:
             return JSONResponse(
                 status_code=404,
-                content={"message": f"episode {data.episode_id} not found"},
+                content={"detail": f"episode {data.episode_id} not found"},
             )
         if data.character_id:
             if data.character_id not in episode.get("characters"):
                 return JSONResponse(
                     status_code=400,
-                    content={"message": "episode and character are not associated"},
+                    content={"detail": "episode and character are not associated"},
                 )
 
     if data.character_id:
@@ -80,13 +80,13 @@ def create_comment(
         if not character:
             return JSONResponse(
                 status_code=404,
-                content={"message": f"character {data.character_id} not found"},
+                content={"detail": f"character {data.character_id} not found"},
             )
 
     try:
         comment = repository.create_comment(**data.dict())
     except Exception as exc:
-        return JSONResponse(status_code=500, content={"message": str(exc)})
+        return JSONResponse(status_code=500, content={"detail": str(exc)})
     return JSONResponse(status_code=201, content=comment)
 
 
@@ -99,7 +99,7 @@ def get_comment(comment_id: int, repository: Repository = Depends(get_repository
     comment = repository.get_comment(comment_id)
     if not comment:
         return JSONResponse(
-            status_code=404, content={"message": f"comment {comment_id} not found"}
+            status_code=404, content={"detail": f"comment {comment_id} not found"}
         )
     return JSONResponse(status_code=200, content=comment)
 
@@ -113,6 +113,6 @@ def delete_comment(comment_id: int, repository: Repository = Depends(get_reposit
     comment = repository.delete_comment(comment_id)
     if not comment:
         return JSONResponse(
-            status_code=404, content={"message": f"comment {comment_id} not found"}
+            status_code=404, content={"detail": f"comment {comment_id} not found"}
         )
-    return JSONResponse(status_code=200, content={"message": "successfully deleted"})
+    return JSONResponse(status_code=200, content={"detail": "successfully deleted"})

@@ -1,6 +1,4 @@
 #!/bin/python3
-import rick_morty
-import uvicorn
 from fastapi import FastAPI
 from rick_morty.endpoints import characters
 from rick_morty.endpoints import episodes
@@ -21,12 +19,9 @@ def create_app() -> FastAPI:
 
     @app.get("/")
     def root():
-        return {"message": "Rick & Morty API"}
+        return {"detail": "Rick & Morty API"}
 
     return app
 
 
 app = create_app()
-
-if __name__ == "__main__":
-    uvicorn.run("rick_morty.main:create_app()", hots="0.0.0.0", port=8000, reload=True)
