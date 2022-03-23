@@ -1,4 +1,3 @@
-from pickletools import pyset
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -18,7 +17,7 @@ from rick_morty.dependencies import get_db
 
 @pytest.fixture(scope="session")
 def client() -> TestClient:
-    app = create_app()
+    app: FastAPI = create_app()
     client = TestClient(app)
     yield client
 
