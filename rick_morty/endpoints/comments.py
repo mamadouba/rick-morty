@@ -2,14 +2,31 @@ from importlib.resources import contents
 from typing import List
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from rick_morty.repositories import Repository
 from rick_morty.dependencies import get_repository
 from rick_morty import schemas
 from rick_morty.auth import auth
 
 router = APIRouter(prefix="/comments", tags=["comments"])
-    
+
+
+@router.get("/export", dependencies=[Depends(auth.JWTBearer())])
+def export_comments(repository: Repository = Depends(get_repository)):
+    comments =  repository.export_comments()
+    with open("comments.csv", "w") as fd:
+        fd.write("id;episode_id,character_id;comment")
+        for comment in comments:
+            row = "{};{};{};{}".format(
+                comment.get("id"),
+                comment.get("episode_id"),
+                comment.get("character_id"),
+                comment.get("comment"),
+            )
+            fd.write(f"{row}\n")
+    return FileResponse(path="comments.csv", filename="comments.csv", media_type="text/csv")
+        
+
 @router.get("/", 
     responses={200: {"model": schemas.CommentList}},
     dependencies=[Depends(auth.JWTBearer())])
@@ -70,3 +87,4 @@ def delete_comment(comment_id: int, repository: Repository = Depends(get_reposit
     if not comment:
         return JSONResponse(status_code=404, content={"message": f"comment {comment_id} not found"})
     return JSONResponse(status_code=200, content={"message": "successfully deleted"})
+

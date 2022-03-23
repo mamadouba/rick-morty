@@ -47,4 +47,11 @@ class CommentRepository(BaseRepository):
             session.commit()
             return comment.as_dict()
 
+    def export_comments(self) -> dict:
+        with self._session_factory() as session:
+            comments = session.query(Comment).all()
+            if comments is None:
+                return {}
+            return [comment.as_dict() for comment in comments]
+
     
