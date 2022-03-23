@@ -25,6 +25,8 @@ services:
       - DB_NAME=test
       - DB_USER=test
       - DB_PASSWORD=test
+      - ENV=test
+      - JWT_SECRET=secret
     container_name: rickmorty-api
 volumes:
   pgdata:

@@ -1,6 +1,9 @@
+from typing import Optional
 from pydantic import BaseSettings 
 
 class Settings(BaseSettings):
+    env: Optional[str] = "dev"
+    
     db_host: str 
     db_port: str 
     db_name: str
@@ -8,16 +11,14 @@ class Settings(BaseSettings):
     db_password: str
 
     jwt_secret: str 
-    jwt_duration: str 
-    jwt_algorithm: str
+    jwt_duration: Optional[int] = 3600  
+    jwt_algorithm: Optional[str] = "HS256"
 
     @property
-    def psql_conn_str(cls):
-        return f"postgresql://{cls.db_user}:{cls.db_password}@{cls.db_host}:{cls.db_port}/{cls.db_name}" 
+    def db_uri(cls):
+        if cls.env == "dev":
+            return "sqlite:////tmp/app.db" 
+        return f"postgresql://{cls.db_user}:{cls.db_password}@{cls.db_host}:{cls.db_port}/{cls.db_name}"
     
-    @property
-    def sqlite_conn_str(cls):
-        return "sqlite:////tmp/app.db" 
-
 settings = Settings()
 

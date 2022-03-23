@@ -6,7 +6,7 @@ from rick_morty.settings import settings
 
 @lru_cache
 def get_db() -> Database:
-    return Database(settings.sqlite_conn_str)
+    return Database(settings.db_uri)
 
 @lru_cache
 def get_repository() -> Repository:
