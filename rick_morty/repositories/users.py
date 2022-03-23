@@ -1,5 +1,6 @@
 from typing import List
 from rick_morty.database.models import User
+from rick_morty.utils import apply_filter
 from .base import BaseRepository
 
 
@@ -12,10 +13,22 @@ class UserRepository(BaseRepository):
             session.refresh(user)
             return user.as_dict()
 
-    def get_users(self) -> List[dict]:
+    def get_users(self, page: int, per_page: int, filters: str) -> List[dict]:
         with self._session_factory() as session:
-            users = session.query(User).all()
-            return [user.as_dict() for user in users]
+            query = session.query(User)
+            total = query.count()
+            query = query.limit(per_page).offset((page - 1) * per_page)
+            items = [item.as_dict() for item in query.all()]
+
+            if filters:
+                items = [apply_filter(item, filters) for item in items]
+
+            return {
+                "data": items,
+                "total": total,
+                "current_page": page,
+                "per_page": per_page,
+            }
 
     def get_user(self, user_id: int) -> dict:
         with self._session_factory() as session:

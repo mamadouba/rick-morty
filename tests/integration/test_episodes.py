@@ -1,10 +1,7 @@
 from fastapi.testclient import TestClient
-from rick_morty.main import app
 
-client = TestClient(app)
-
-def test_get_episodes():
-    response = client.get("/episodes/")
+def test_get_episodes(client: TestClient, headers: dict):
+    response = client.get("/episodes/", headers=headers)
     assert response.status_code == 200
     data = response.json()    
     fields = [

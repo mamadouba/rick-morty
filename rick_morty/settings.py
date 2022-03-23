@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     @property
     def db_uri(cls):
         if cls.env == "dev":
-            return "sqlite:////tmp/app.db"
+            return f"sqlite:////tmp/{cls.db_name}"
         return f"postgresql://{cls.db_user}:{cls.db_password}@{cls.db_host}:{cls.db_port}/{cls.db_name}"
 
 
