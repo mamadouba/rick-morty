@@ -6,18 +6,23 @@ from fastapi.responses import JSONResponse
 from rick_morty.repositories import Repository
 from rick_morty.dependencies import get_repository
 from rick_morty import schemas
+from rick_morty.auth import auth
 
 router = APIRouter(prefix="/comments", tags=["comments"])
     
-@router.get("/", responses={200: {"model": schemas.CommentList}})
+@router.get("/", 
+    responses={200: {"model": schemas.CommentList}},
+    dependencies=[Depends(auth.JWTBearer())])
 def get_comments(page: int = 1, per_page: int = 10, filters: str = "", repository: Repository = Depends(get_repository)):
     comments =  repository.get_comments(page, per_page, filters)
     return JSONResponse(status_code=200, content=comments)
 
-@router.post("/", responses={
-    201: {"model": schemas.CommentOut},
-    400: {"model": schemas.Message },
-    404: {"model": schemas.Message }})
+@router.post("/", 
+    responses={
+        201: {"model": schemas.CommentOut},
+        400: {"model": schemas.Message },
+        404: {"model": schemas.Message }},
+    dependencies=[Depends(auth.JWTBearer())])
 def create_comment(data: schemas.CommentIn, repository: Repository = Depends(get_repository)):
     data_keys = ["episode_id", "character_id"]
     if not any([True for k in data_keys if k in data.dict()]):
@@ -43,9 +48,11 @@ def create_comment(data: schemas.CommentIn, repository: Repository = Depends(get
         return JSONResponse(status_code=500, content={"message": str(exc)})
     return JSONResponse(status_code=201, content=comment)
 
-@router.get("/{comment_id}", responses={
-    200: {"model": schemas.CommentOut},
-    404: {"model": schemas.Message }})
+@router.get("/{comment_id}", 
+    responses={
+        200: {"model": schemas.CommentOut},
+        404: {"model": schemas.Message }},
+    dependencies=[Depends(auth.JWTBearer())])
 def get_comment(comment_id: int, repository: Repository = Depends(get_repository)):
     comment =  repository.get_comment(comment_id)
     if not comment:
@@ -53,9 +60,11 @@ def get_comment(comment_id: int, repository: Repository = Depends(get_repository
     return JSONResponse(status_code=200, content=comment)
 
 
-@router.delete("/{comment_id}", responses={
-    200: {"model": schemas.CommentOut},
-    404: {"model": schemas.Message }})
+@router.delete("/{comment_id}", 
+    responses={
+        200: {"model": schemas.CommentOut},
+        404: {"model": schemas.Message }},
+    dependencies=[Depends(auth.JWTBearer())])
 def delete_comment(comment_id: int, repository: Repository = Depends(get_repository)):
     comment =  repository.delete_comment(comment_id)
     if not comment:

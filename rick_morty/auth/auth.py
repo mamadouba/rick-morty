@@ -32,14 +32,14 @@ class JWTBearer(HTTPBearer):
     async def __call__(self, request: Request):
         credentials: HTTPAuthorizationCredentials = await super().__call__(request)
         if not credentials:
-            raise HTTPException(status_code=403, detail="Invalid credentials")
+            raise HTTPException(status_code=401, detail="Invalid credentials")
         if not credentials.scheme.lower() == "bearer":
-            raise HTTPException(status_code=400, detail="Invalid authentication scheme")
+            raise HTTPException(status_code=401, detail="Invalid authentication scheme")
         try:
             _, token = credentials.credentials.split()
             payload = verify_jwt(token)
         except Exception:
-            raise HTTPException(status_code=403, detail="Token is not valid.")
+            raise HTTPException(status_code=401, detail="Token is not valid.")
         if payload["expires"] < time.time():
             raise HTTPException(status_code=401, detail="Token has expired.")
         from rick_morty.main import revoked_tokens
@@ -52,12 +52,12 @@ def authorize(*, request: Request):
     auth = request.headers.get("Authorization")
     if auth is None:
         raise HTTPException(
-            status_code=400,
+            status_code=401,
             detail="Missing Authorization header")
     scheme, token = auth.split()
     if scheme.lower() != "bearer":
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail="Invalid authentication scheme.")
     try:
         data = verify_jwt(token)

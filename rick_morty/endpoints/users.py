@@ -5,7 +5,6 @@ from rick_morty.repositories import Repository
 from rick_morty.dependencies import get_repository
 from rick_morty import schemas
 from rick_morty.auth import auth
-from rick_morty.auth import auth
 
 router = APIRouter(prefix="/users", tags=["users"])
     
@@ -30,7 +29,9 @@ def login(data: schemas.Login, repository: Repository = Depends(get_repository))
     token = auth.sign_jwt(**user)
     return JSONResponse(status_code=200, content=token)
 
-@router.get("/", responses={200: {"model": schemas.UserList}})
+@router.get("/", 
+    responses={200: {"model": schemas.UserList}},
+    dependencies=[Depends(auth.JWTBearer())])
 def get_users(page: int = 1, per_page: int = 10, filters: str = "", repository: Repository = Depends(get_repository)):
     users =  repository.get_users(page, per_page, filters)
     return JSONResponse(status_code=200, content=users)
@@ -54,9 +55,11 @@ def create_user(data: schemas.UserIn, repository: Repository = Depends(get_repos
         return JSONResponse(status_code=500, content={"message": str(exc)})
     return JSONResponse(status_code=201, content=user)
 
-@router.get("/{user_id}", responses={
-    200: {"model": schemas.UserOut},
-    404: {"model": schemas.Message }})
+@router.get("/{user_id}", 
+    responses={
+        200: {"model": schemas.UserOut},
+        404: {"model": schemas.Message }},
+    dependencies=[Depends(auth.JWTBearer())])
 def get_user(user_id: int, repository: Repository = Depends(get_repository)):
     user =  repository.get_user(user_id)
     if not user:
@@ -64,9 +67,11 @@ def get_user(user_id: int, repository: Repository = Depends(get_repository)):
     return JSONResponse(status_code=200, content=user)
 
 
-@router.delete("/{user_id}", responses={
-    200: {"model": schemas.UserOut},
-    404: {"model": schemas.Message }})
+@router.delete("/{user_id}", 
+    responses={
+        200: {"model": schemas.UserOut},
+        404: {"model": schemas.Message }},
+        dependencies=[Depends(auth.JWTBearer())])
 def delete_user(user_id: int, repository: Repository = Depends(get_repository)):
     user =  repository.delete_user(user_id)
     if not user:
